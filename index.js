@@ -75,6 +75,18 @@ async function run() {
       res.send(result);
     });
 
+    app.get("/getToysByText/:text", async (req, res) => {
+      const text = req.params.text;
+      const result = await toysCollection
+        .find({
+          $or: [
+            { toyName: { $regex: text, $options: "i" } },
+          ],
+        })
+        .toArray();
+      res.send(result);
+    });
+
     // add toy
     const toyCollection = client.db("newToys").collection("toy");
 
