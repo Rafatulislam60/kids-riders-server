@@ -27,6 +27,7 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
 
+    // all toy collection
     const toysCollection = client.db("kidToys").collection("toys");
 
     app.get("/allToys", async (req, res) => {
@@ -55,6 +56,53 @@ async function run() {
       };
 
       const result = await toysCollection.findOne(query, options);
+      res.send(result);
+    });
+
+    // add toy
+    const toyCollection = client.db("newToys").collection("toy");
+
+    app.get("/toy", async (req, res) => {
+      const cursor = toyCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    });
+
+    app.get("/myToys/updateToy/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await toyCollection.findOne(query);
+      res.send(result);
+    });
+
+    app.post("/toy", async (req, res) => {
+      const newToy = req.body;
+      console.log(newToy);
+      const result = await toyCollection.insertOne(newToy);
+      res.send(result);
+    });
+
+    app.put("/toy/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const options = { upsert: true };
+      const updatedToy = req.body;
+      const toy = {
+        $set: {
+          price: updatedToy.price,
+          // rating: updatedToy.rating,
+          quantity: updatedToy.quantity,
+          description: updatedToy.description,
+        },
+      };
+      const result = await toyCollection.updateOne(filter, toy, options);
+      res.send(result);
+    });
+
+    app.delete("/toy/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await toyCollection.deleteOne(query);
       res.send(result);
     });
 
