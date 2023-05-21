@@ -35,6 +35,22 @@ async function run() {
       const result = await cursor.toArray();
       res.send(result);
     });
+    app.get("/allToys/:text", async (req, res) => {
+      console.log(req.params.text);
+      if (
+        req.params.text == "Car" ||
+        req.params.text == "Truck" ||
+        req.params.text == "Bus"
+      ) {
+        const result = await toysCollection
+          .find({ subCategory: req.params.text })
+          .toArray();
+          console.log(result);
+        return res.send(result);
+      }
+      const result = await toysCollection.find({}).toArray();
+      res.send(result);
+    });
 
     app.get("/allToys/:id", async (req, res) => {
       const id = req.params.id;
