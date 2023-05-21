@@ -82,6 +82,7 @@ async function run() {
       res.send(result);
     });
 
+    // update toy
     app.put("/toy/:id", async (req, res) => {
       const id = req.params.id;
       const filter = { _id: new ObjectId(id) };
@@ -98,6 +99,7 @@ async function run() {
       res.send(result);
     });
 
+    // delete toy
     app.delete("/toy/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
