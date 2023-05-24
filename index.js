@@ -31,10 +31,15 @@ async function run() {
     const toysCollection = client.db("kidToys").collection("toys");
 
     app.get("/allToys", async (req, res) => {
-      const cursor = toysCollection.find();
+      const search = req.query.search;
+      console.log(search);
+      const query = { toyName: { $regex: search, $options: "i" } }
+
+      const cursor = toysCollection.find(query);
       const result = await cursor.toArray();
       res.send(result);
     });
+    
     app.get("/allToys/:text", async (req, res) => {
       console.log(req.params.text);
       if (
@@ -75,17 +80,6 @@ async function run() {
       res.send(result);
     });
 
-    app.get("/getToysByText/:text", async (req, res) => {
-      const text = req.params.text;
-      const result = await toysCollection
-        .find({
-          $or: [
-            { toyName: { $regex: text, $options: "i" } },
-          ],
-        })
-        .toArray();
-      res.send(result);
-    });
 
     // add toy
     const toyCollection = client.db("newToys").collection("toy");
