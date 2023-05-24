@@ -57,35 +57,35 @@ async function run() {
       res.send(result);
     });
 
-    app.get("/allToys/:id", async (req, res) => {
+    app.get("/details/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
 
-      const options = {
-        // sort matched documents in descending order by rating
-        sort: { "imdb.rating": -1 },
-        // Include only the `title` and `imdb` fields in the returned document
-        projection: {
-          seller: 1,
-          availableQuantity: 1,
-          picture: 1,
-          rating: 1,
-          price: 1,
-          toyName: 1,
-          detailsDescription: 1,
-        },
-      };
+      // const options = {
+      //   // sort matched documents in descending order by rating
+      //   sort: { "imdb.rating": -1 },
+      //   // Include only the `title` and `imdb` fields in the returned document
+      //   projection: {
+      //     seller: 1,
+      //     availableQuantity: 1,
+      //     picture: 1,
+      //     rating: 1,
+      //     price: 1,
+      //     toyName: 1,
+      //     detailsDescription: 1,
+      //   },
+      // };
 
-      const result = await toysCollection.findOne(query, options);
+      const result = await toysCollection.findOne(query);
       res.send(result);
     });
 
 
     // add toy
-    const toyCollection = client.db("newToys").collection("toy");
+    // const toysCollection = client.db("kidToys").collection("toys");
 
     app.get("/toy", async (req, res) => {
-      const cursor = toyCollection.find();
+      const cursor = toysCollection.find();
       const result = await cursor.toArray();
       res.send(result);
     });
@@ -93,14 +93,14 @@ async function run() {
     app.get("/myToys/updateToy/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
-      const result = await toyCollection.findOne(query);
+      const result = await toysCollection.findOne(query);
       res.send(result);
     });
 
     app.post("/toy", async (req, res) => {
-      const newToy = req.body;
-      console.log(newToy);
-      const result = await toyCollection.insertOne(newToy);
+      const kidToys = req.body;
+      console.log(kidToys);
+      const result = await toysCollection.insertOne(kidToys);
       res.send(result);
     });
 
@@ -110,14 +110,14 @@ async function run() {
       const filter = { _id: new ObjectId(id) };
       const options = { upsert: true };
       const updatedToy = req.body;
-      const toy = {
+      const toys = {
         $set: {
           price: updatedToy.price,
           quantity: updatedToy.quantity,
           description: updatedToy.description,
         },
       };
-      const result = await toyCollection.updateOne(filter, toy, options);
+      const result = await toysCollection.updateOne(filter, toys, options);
       res.send(result);
     });
 
@@ -125,7 +125,7 @@ async function run() {
     app.delete("/toy/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
-      const result = await toyCollection.deleteOne(query);
+      const result = await toysCollection.deleteOne(query);
       res.send(result);
     });
 
